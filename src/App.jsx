@@ -93,6 +93,7 @@ export default function CNCQuoter() {
   const [savedMats, setSavedMats] = useState([]);
   const [newMat, setNewMat] = useState({ label: "", pricePerLb: "", density: "" });
   const [matSaved, setMatSaved] = useState(false);
+const [saveMsg, setSaveMsg] = useState('');
 
  // Save quote to Supabase
 const saveQuote = async () => {
@@ -112,9 +113,10 @@ const saveQuote = async () => {
       ops, adjustments
     }
   })
-  if (error) alert('Error saving: ' + error.message)
-  else alert('Quote saved! ✅')
-} 
+  if (error) setSaveMsg('Error saving: ' + error.message)
+  else setSaveMsg('Quote saved! ✅')
+  setTimeout(() => setSaveMsg(''), 3000)
+}
 const addSavedMat = () => {
     if (!newMat.label || !newMat.pricePerLb || !newMat.density) return;
     const id = "saved_" + Date.now();
@@ -572,7 +574,7 @@ const addSavedMat = () => {
                 {copied ? "✓ Copied to Clipboard" : "Copy Quote Text"}
               </button>
               <button onClick={() => window.print()} style={{ flex: 1, padding: 13, background: C.surface, color: C.accent, border: `1px solid ${C.accent}`, borderRadius: 4, fontFamily: font.mono, fontSize: 11, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer" }}>Print</button>
-<button onClick={saveQuote} style={{ flex: 1, padding: 13, background: C.green, color: "#fff", border: "none", borderRadius: 4, fontFamily: font.mono, fontSize: 11, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontWeight: 700 }}>Save Quote</button>
+<button onClick={saveQuote} style={{ flex: 1, padding: 13, background: C.green, color: "#fff", border: "none", borderRadius: 4, fontFamily: font.mono, fontSize: 11, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontWeight: 700 }}>{saveMsg && <div style={{ color: C.green, fontFamily: font.mono, fontSize: 12, textAlign: 'center', marginBottom: 8 }}>{saveMsg}</div>}Save Quote</button>
             </div>
           </div>
         )}
