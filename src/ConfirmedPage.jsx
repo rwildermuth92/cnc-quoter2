@@ -9,7 +9,7 @@ export default function ConfirmedPage() {
       <p style={{ color: '#888' }}>
         Your email has been verified. You can now return to the app and sign in.
       </p>
-      <a href="https://cnc-quoter2.vercel.app" style={{
+      <a href="https://cnc-quoter2-3xh2.vercel.app" style={{
         display: 'inline-block', marginTop: 24,
         padding: '10px 24px', background: '#f59e0b',
         color: '#000', borderRadius: 4,
