@@ -110,7 +110,7 @@ const saveQuote = async () => {
     quote_data: {
       jobName, partNum, customer, quoteNum, qty, pricingMode,
       matId, stockL, stockW, stockH, matWaste,
-      ops, adjustments
+      ops
     }
   })
   if (error) setSaveMsg('Error saving: ' + error.message)
