@@ -94,6 +94,7 @@ export default function CNCQuoter() {
   const [newMat, setNewMat] = useState({ label: "", pricePerLb: "", density: "" });
   const [matSaved, setMatSaved] = useState(false);
 const [saveMsg, setSaveMsg] = useState('');
+const [savedQuotes, setSavedQuotes] = useState([]);
 
  // Save quote to Supabase
 const saveQuote = async () => {
@@ -116,6 +117,15 @@ const saveQuote = async () => {
   if (error) setSaveMsg('Error saving: ' + error.message)
   else setSaveMsg('Quote saved! ✅')
   setTimeout(() => setSaveMsg(''), 3000)
+}
+
+const loadQuotes = async () => {
+  const { data, error } = await supabase
+    .from('quotes')
+    .select('*')
+    .order('created_at', { ascending: false })
+  if (!error) setSavedQuotes(data)
+  setShowQuotes(true)
 }
 const addSavedMat = () => {
     if (!newMat.label || !newMat.pricePerLb || !newMat.density) return;
@@ -148,6 +158,8 @@ const addSavedMat = () => {
 
   const [tab, setTab] = useState("job");  // job | material | ops | adjust | quote
   const [copied, setCopied] = useState(false);
+const [showQuotes, setShowQuotes] = useState(false);
+const [savedQuotes, setSavedQuotes] = useState([]);
 
   // ── Derived calculations ──────────────────────────────────────────────────
   const allMats  = [...MATERIALS.slice(0, -1), ...savedMats, MATERIALS[MATERIALS.length - 1]];
@@ -244,7 +256,10 @@ const addSavedMat = () => {
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <div style={{ textAlign: "right" }}>
             <div style={{ fontSize: 11, color: C.muted, fontFamily: font.mono }}>TOTAL</div>
-            <div style={{ fontSize: 18, fontFamily: font.mono, color: C.accent, fontWeight: 700 }}>{fmtTotal(totalPrice)}<button
+            <div style={{ fontSize: 18, fontFamily: font.mono, color: C.accent, fontWeight: 700 }}>{fmtTotal(totalPrice)}<button onClick={() => loadQuotes}
+  style={{ fontSize: 10, color: C.accent, background: "transparent", border: `1px solid ${C.accent}`, borderRadius: 3, padding: "3px 8px", cursor: "pointer", fontFamily: font.mono, letterSpacing: 1, textTransform: "uppercase" }}>
+  My Quotes
+</button><button
   onClick={() => supabase.auth.signOut()}
   style={{ fontSize: 10, color: C.muted, background: "transparent", border: `1px solid ${C.border}`, borderRadius: 3, padding: "3px 8px", cursor: "pointer", fontFamily: font.mono, letterSpacing: 1, textTransform: "uppercase" }}>
   Logout
@@ -253,7 +268,22 @@ const addSavedMat = () => {
         </div>
       </div>
 
-      {/* Tab nav */}
+{showQuotes && (
+  <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 24, width: '90%', maxWidth: 700, maxHeight: '80vh', overflowY: 'auto' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <span style={{ fontFamily: font.mono, fontSize: 13, color: C.accent, letterSpacing: 2, textTransform: 'uppercase' }}>My Saved Quotes</span>
+        <button onClick={() => setShowQuotes(false)} style={{ background: 'transparent', border: 'none', color: C.muted, cursor: 'pointer', fontSize: 18 }}>✕</button>
+      </div>
+      {savedQuotes.length === 0 ? (
+        <div style={{ color: C.muted, textAlign: 'center', padding: 32 }}>No saved quotes yet.</div>
+      ) : (
+        savedQuotes.map(q => (
+          <div key={q.id} style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 4, padding: '12px 16px', marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontFamily: font.mono, fontSize: 12, color: C.accent }}>{q.quote_number}</div>
+              <div style={{ fontSize: 13, color: C.text, marginTop: 2 }}>{q.customer_name     
+ {/* Tab nav */}
       <div style={{ background: C.surface, borderBottom: `1px solid ${C.border}`, display: "flex", padding: "0 24px", overflowX: "auto" }}>
         {tabs.map((t, i) => (
           <button key={t} onClick={() => setTab(t)} style={{
