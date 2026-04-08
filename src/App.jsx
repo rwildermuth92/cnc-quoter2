@@ -159,7 +159,7 @@ const addSavedMat = () => {
   const [tab, setTab] = useState("job");  // job | material | ops | adjust | quote
   const [copied, setCopied] = useState(false);
 const [showQuotes, setShowQuotes] = useState(false);
-const [savedQuotes, setSavedQuotes] = useState([]);
+
 
   // ── Derived calculations ──────────────────────────────────────────────────
   const allMats  = [...MATERIALS.slice(0, -1), ...savedMats, MATERIALS[MATERIALS.length - 1]];
@@ -275,15 +275,43 @@ const [savedQuotes, setSavedQuotes] = useState([]);
         <span style={{ fontFamily: font.mono, fontSize: 13, color: C.accent, letterSpacing: 2, textTransform: 'uppercase' }}>My Saved Quotes</span>
         <button onClick={() => setShowQuotes(false)} style={{ background: 'transparent', border: 'none', color: C.muted, cursor: 'pointer', fontSize: 18 }}>✕</button>
       </div>
-      {savedQuotes.length === 0 ? (
-        <div style={{ color: C.muted, textAlign: 'center', padding: 32 }}>No saved quotes yet.</div>
-      ) : (
-        savedQuotes.map(q => (
-          <div key={q.id} style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 4, padding: '12px 16px', marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <div style={{ fontFamily: font.mono, fontSize: 12, color: C.accent }}>{q.quote_number}</div>
-              <div style={{ fontSize: 13, color: C.text, marginTop: 2 }}>{q.customer_name     
- {/* Tab nav */}
+     {savedQuotes.length === 0 ? (
+  <div style={{ color: C.muted, textAlign: 'center', padding: 32 }}>No saved quotes yet.</div>
+) : (
+  savedQuotes.map(q => (
+    <div key={q.id} style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 4, padding: '12px 16px', marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div>
+        <div style={{ fontFamily: font.mono, fontSize: 12, color: C.accent }}>{q.quote_number}</div>
+        <div style={{ fontSize: 13, color: C.text, marginTop: 2 }}>{q.customer_name || '—'} · {q.job_name || 'New Quote'}</div>
+        <div style={{ fontSize: 11, color: C.muted, marginTop: 2 }}>{new Date(q.created_at).toLocaleDateString()}</div>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontFamily: font.mono, fontSize: 16, color: C.accent }}>${q.total_price?.toFixed(2)}</span>
+        <button onClick={() => {
+          const d = q.quote_data
+          if (d) {
+            if (d.jobName !== undefined) setJobName(d.jobName)
+            if (d.partNum !== undefined) setPartNum(d.partNum)
+            if (d.customer !== undefined) setCustomer(d.customer)
+            if (d.qty !== undefined) setQty(d.qty)
+            if (d.pricingMode !== undefined) setPricingMode(d.pricingMode)
+            if (d.matId !== undefined) setMatId(d.matId)
+            if (d.stockL !== undefined) setStockL(d.stockL)
+            if (d.stockW !== undefined) setStockW(d.stockW)
+            if (d.stockH !== undefined) setStockH(d.stockH)
+            if (d.matWaste !== undefined) setMatWaste(d.matWaste)
+            if (d.ops !== undefined) setOps(d.ops)
+          }
+          setShowQuotes(false)
+          setTab('job')
+        }} style={{ padding: '6px 14px', background: C.accent, color: C.bg, border: 'none', borderRadius: 3, fontFamily: font.mono, fontSize: 10, letterSpacing: 1, textTransform: 'uppercase', cursor: 'pointer', fontWeight: 700 }}>Load</button>
+      </div>
+    </div>
+  ))
+)}
+    </div>
+  </div>
+)} {/* Tab nav */}
       <div style={{ background: C.surface, borderBottom: `1px solid ${C.border}`, display: "flex", padding: "0 24px", overflowX: "auto" }}>
         {tabs.map((t, i) => (
           <button key={t} onClick={() => setTab(t)} style={{
